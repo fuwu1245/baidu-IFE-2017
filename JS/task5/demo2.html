@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>任务四：基础JavaScript练习</title>
+    <style>
+        #list-display {
+            display: flex;
+            align-items: flex-end;
+        }
+    </style>
+</head>
+
+<body>
+<input id='input-box' type="text">
+<button class='insert' value="left-in">左侧入</button>
+<button class='insert' value="right-in">右侧入</button>
+<button class='delete' value="left-out">左侧出</button>
+<button class='delete' value="right-out">右侧出</button>
+<div id='list-display'>
+
+</div>
+<button id='sort'>排序</button>
+</body>
+<script type="text/javascript">
+    //生成dom节点，并设置基础样式
+    function createDiv(height) {
+        var div = document.createElement('div');
+        div.style.display = 'inline-block';
+        div.style.margin = '5px';
+        div.style.backgroundColor = '#000';
+        div.style.color = "#fff";
+        div.style.padding = "5px";
+        div.style.fontSize = "18px";
+        div.style.height = height + 'px';
+        div.style.width = "10px";
+        return div;
+    }
+    //插入节点的函数，根据button上的value值来判断从左插入还是从右插入
+    function insert(event) {
+        var listDisplay = document.getElementById('list-display');
+        var inputBox = document.getElementById('input-box');
+        if (listDisplay.children.length > 60) {
+            alert("元素已满60");
+            return;
+        }
+        var pattern = /\D+/g;
+        var val = inputBox.value;
+        var div = createDiv(parseInt(val));
+        if (pattern.test(inputBox.value) || parseInt(val) < 10 || parseInt(val) > 99) {
+            alert("请输入数字10-99");
+            return;
+        }
+        // div.innerHTML = inputBox.value;
+        if (event.target.value == 'left-in')
+            listDisplay.insertBefore(div, listDisplay.firstElementChild);
+        else
+            listDisplay.appendChild(div);
+    }
+    //删除节点的函数，根据button上的value值来判断从左删除还是从右删除
+    function out(event) {
+        var listDisplay = document.getElementById('list-display');
+        if (listDisplay.children.length == 0) return;
+        if (event.target.value == 'left-out') {
+            alert(listDisplay.firstElementChild.innerHTML);
+            listDisplay.removeChild(listDisplay.firstElementChild);
+        } else {
+            alert(listDisplay.lastElementChild.innerHTML);
+            listDisplay.removeChild(listDisplay.lastElementChild);
+        }
+    }
+    //冒泡排序,保存每次排序的数据，用于渲染
+    var timer;
+    function bubbleSort(arr) {
+        var listDisplay = document.getElementById('list-display');
+        var data = [];
+        var dataList = [];
+        var len = listDisplay.children.length;
+        for (var i = 0; i < len; i++) {
+            data.push(parseInt(listDisplay.children[i].style.height));
+        }
+        i = len;
+        var j;
+        var tempExchangVal;
+        console.log(data);
+        while (i > 0) {
+            for (j = 0; j < i - 1; j++) {
+                if (data[j] > data[j + 1]) {
+                    tempExchangVal = data[j];
+                    data[j] = data[j + 1];
+                    data[j + 1] = tempExchangVal;
+                    dataList.push(JSON.parse(JSON.stringify(data)));
+                    console.log(dataList.length);
+                }
+            }
+            i--;
+        }
+        console.log("dataList:");
+        console.log(dataList);
+        var k = 0;
+        timer = setInterval(renderSort, 500, dataList);
+    }
+    //通过改变高度渲染
+    function renderSort(dataList) {
+        var arr = dataList.shift()||[];
+        console.log(arr);
+        if (arr.length==0) {
+            clearInterval(timer);
+            return;
+        }
+        var listDisplay = document.getElementById('list-display');
+        var divs = listDisplay.children;
+        for (var i = 0, len = listDisplay.children.length; i < len; i++) {
+            divs[i].style.height=arr[i]+'px';
+        }
+    }
+    //为插入和删除还有排序按钮的点击事件绑定函数
+    function init() {
+        var ins = document.getElementsByClassName('insert');
+        for (var i = 0; i < 2; i++) {
+            ins[i].addEventListener('click', insert);
+        }
+        var del = document.getElementsByClassName('delete');
+        for (var i = 0; i < 2; i++) {
+            del[i].addEventListener('click', out);
+        }
+        var sort = document.getElementById('sort');
+        sort.addEventListener('click',bubbleSort);
+    }
+    //页面初始化
+    init();
+</script>
+
+</html>

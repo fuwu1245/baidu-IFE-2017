@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IFE JavaScript Task 04</title>
+    <style>
+        ul {
+            list-style: none;
+            overflow: hidden;
+        }
+
+        ul li {
+            float: left;
+            height: 25px;
+            padding: 0 .5em;
+            margin-left: 1em;
+            background-color: red;
+            color: #fff;
+            text-align: center;
+        }
+    </style>
+    <script>
+        "use strict";
+        function insertValue(direction, method) {
+            var _input = document.getElementById('nextValue'),
+                re = /\d+/,
+                _target = document.getElementById("preview"),
+                _li = _target.getElementsByTagName("li"),
+                _ele = document.createElement("li"),
+                len;
+            _ele.innerText = _input.value;
+
+            //input 输入合法性验证
+//            if (!re.exec(_input.value)){
+//                console.info("Wrong input, please input a digit");
+//                return;
+//            }
+            if (_input.value == "") {
+                return;
+            }
+
+            //li元素个数为0时 不允许删除操作
+            if (_li.length == 0 && method == "out") {
+                console.info("can not perform delete action for there is no element to delete");
+                return;
+            }
+
+            //为添加的元素添加监听事件
+            method == "in" ? _ele.addEventListener("click", function (e) {
+                    document.getElementById("preview").removeChild(e.target);
+                }) : len = _li.length;
+
+            //进行删除或添加操作
+            switch (direction) {
+                case "right":
+                    //method == "in" ? _target.appendChild(_ele) : _target.removeChild(_target.lastChild);
+                    if (method == "in") {
+                        _target.appendChild(_ele);
+                    } else {
+                        alert(_li[len - 1].innerText);
+                        _target.removeChild(_li[len - 1]);
+                        //_target.removeChild(_target.lastChild);
+                    }
+                    break;
+                case "left":
+                    //method == "in" ? _target.insertBefore(_ele, _target.firstChild) : _target.removeChild(_target.firstChild);
+                    if (method == "in") {
+                        _target.insertBefore(_ele, _target.firstChild)
+                    } else {
+                        alert(_target.children[0].innerText);
+                        _target.removeChild(_target.firstChild);
+                    }
+                    break;
+                default:
+                    console.error("Error");
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="action">
+    <textarea id="nextValue"></textarea>
+    <button onclick="insertValue('left','in')">左侧入</button>
+    <button onclick="insertValue('right', 'in')">右侧入</button>
+    <button onclick="insertValue('left','out')">左侧出</button>
+    <button onclick="insertValue('right','out')">右侧出</button>
+</div>
+<div class="preview">
+    <ul id="preview">
+    </ul>
+</div>
+<ul id="test">
+    <li>1</li>
+    <li>2</li>
+    <li>3</li>
+    <li>4</li>
+    <li>5</li>
+    <li>6</li>
+    <li>7</li>
+    <li>8</li>
+    <li>9</li>
+    <li>10</li>
+</ul>
+<button onclick="my()">Test</button>
+<script>
+    var test = document.getElementById("test");
+    var testLi = document.getElementsByTagName("li");
+    for (var i = 0; i < testLi.length; i++) {
+        testLi[i].addEventListener("click", function (e) {
+            document.getElementById("test").removeChild(e.target);
+        })
+    }
+</script>
+</body>
+</html>

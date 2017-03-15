@@ -1,127 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>IFE JavaScript Task 05</title>
-    <style>
-        ul {
-            list-style: none;
-            overflow: hidden;
-            background-color: #ccc;
-            width: 100%;
-            height: 100px;
-        }
+  <meta charset="UTF-8">
+  <title>IFE JavaScript Task 05</title>
+  <style>
+    ul {
+      list-style: none;
+      overflow: hidden;
+      background-color: #ccc;
+      width: 100%;
+      height: 150px;
+      padding-left: 20px;
+    }
 
-        ul li {
-            float: left;
-            height: 100px;
-            width: 10px;
-            margin-left: 1px;
-            position: relative;
-        }
+    ul li {
+      float: left;
+      height: 150px;
+      width: 20px;
+      margin-left: 1px;
+      position: relative;
+    }
 
-        ul li span {
-            display: block;
-            background-color: red;
-            position: absolute;
-            width: 10px;
-            left:0;
-            bottom: 0;
-        }
+    ul li span {
+      display: block;
+      background-color: red;
+      position: absolute;
+      width: 20px;
+      left: 0;
+      bottom: 0;
+    }
 
-        ul li span:hover {
-            cursor: pointer;
-        }
-    </style>
-    <script>
-        "use strict";
-        function removeLi(ele){
-//            var _target = document.getElementById("preview"),
-//                _li = _target.getElementsByTagName("li");
-//            _li.length == 0 ? console.error("can not perform delete action for there is no element to delete") : _target.removeChild(ele);
-            document.getElementById("preview").removeChild(ele)
-
-        }
-
-        function insertValue(direction, method) {
-            var _input = document.getElementById('nextValue'),
-                re = /\d+/,
-                _target = document.getElementById("preview"),
-                _li = _target.getElementsByTagName("li"),
-                _ele = document.createElement("li"),
-                _span = document.createElement("span"),
-                len;
-
-            //input 输入合法性验证
-            if (!re.exec(_input.value)){
-                console.info("Wrong input, please input a digit");
-                return;
-            }
-            if (_input.value > 100 | _input.value < 0){
-                console.info("Wrong input, please input a digit");
-                return;
-            }
-
-            //li元素个数为0时 不允许删除操作
-            if(_li.length == 0 && method == "out"){
-                console.info("can not perform delete action for there is no element to delete");
-                return;
-            }
-
-            //li元素个数为60时，不允许再插入元素
-            if(_li.length == 60 && method == "in"){
-                alert("you can only have 60 digits in ul element");
-                return;
-            }
-
-            //span设置高度
-            _span.style.height = _input.value + "px";
-
-            //为添加的元素添加监听事件
-            method == "in" ? _ele.addEventListener("click", function () {
-                removeLi(_ele);
-            }) : len = _li.length;
-
-            //进行删除或添加操作
-            switch (direction) {
-                case "right":
-                    //method == "in" ? _target.appendChild(_ele) : _target.removeChild(_target.lastChild);
-                    if (method == "in"){
-                        _target.appendChild(_ele);
-                        _ele.appendChild(_span);
-                    }else{
-                        //alert(_li[len-1].innerText);
-                        _target.removeChild(_li[len-1]);
-                        //_target.removeChild(_target.lastChild);
-                    }
-                    break;
-                case "left":
-                    //method == "in" ? _target.insertBefore(_ele, _target.firstChild) : _target.removeChild(_target.firstChild);
-                    if (method == "in"){
-                        _target.insertBefore(_ele, _target.firstChild);
-                        _ele.appendChild(_span);
-                    }else{
-                        //alert(_target.children[0].innerText);
-                        _target.removeChild(_target.firstChild);
-                    }
-                    break;
-                default:
-                    console.error("Error");
-            }
-        }
-    </script>
+    ul li span:hover {
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
 <div class="action">
-    <input type="text" id="nextValue">
-    <button onclick="insertValue('left','in')">左侧入</button>
-    <button onclick="insertValue('right', 'in')">右侧入</button>
-    <button onclick="insertValue('left','out')">左侧出</button>
-    <button onclick="insertValue('right','out')">右侧出</button>
+  <input type="text" id="input">
+  <button id="leftin">左侧入</button>
+  <button id="rightin">右侧入</button>
+  <button id="leftout">左侧出</button>
+  <button id="rightout">右侧出</button>
+  <button id="randombtn">60个随机数</button>
+  <button id="clearbtn">清除随机数</button>
+  <button id="sortmap">排序</button>
+  <p id="notice"></p>
 </div>
-<div class="preview">
-    <ul id="preview">
-    </ul>
-</div>
+<ul id="preview">
+</ul>
+<script>
+  'use strict';
+  let resultUl = document.getElementById('preview'),
+    input = document.getElementById('input'),
+    leftIn = document.getElementById('leftin'),
+    leftOut = document.getElementById('leftout'),
+    rightIn = document.getElementById('rightin'),
+    rightOut = document.getElementById('rightout'),
+    randomBtn = document.getElementById('randombtn'),
+    clearBtn = document.getElementById('clearbtn'),
+    notice = document.getElementById('notice'),
+    sortMap = document.getElementById('sortmap'),
+    re = /\d+/,
+    data = [];
+  function render() {
+    removeAllChild(resultUl);
+    for (let i = 0; i < data.length; i++) {
+      let _li = document.createElement('li'),
+        _span = document.createElement('span');
+      _span.innerText = data[i];
+      _span.style.height = data[i] + 'px';
+      _li.appendChild(_span);
+      resultUl.appendChild(_li);
+    }
+    console.log('render');
+  }
+  function removeAllChild(node) {
+    while (node.hasChildNodes()) {
+      node.removeChild(node.lastChild);
+    }
+  }
+  function createRandom() {
+    data = [];
+    for (let i = 0; i < 60; i++) {
+      let num = Math.random() * 90 + 10;
+      data.push(Math.floor(num));
+    }
+  }
+  function sort() {
+    let time = null,
+      i = 0,
+      j = 1;
+    console.info(data);
+    time = setInterval(function () {
+      if (i < data.length) {
+        if (j < data.length) {
+          if (data[i] > data[j]) {
+            let temp = data[i];
+            data[i] = data[j];
+            data[j] = temp;
+            render();
+          }
+          j++;
+        } else {
+          i++;
+          j = i + 1;
+        }
+      } else {
+        clearInterval(time);
+        console.info(data);
+        return;
+      }
+    }, 3);
+  }
+  function verifyInput() {
+    if (!re.exec(input.value)) {
+      notice.innerText = "请输入数字";
+      return false;
+    }
+    if (data.length >= 60) {
+      notice.innerText = "数组已满，无法添加元素";
+      return false;
+    }
+    return true;
+  }
+  function clearRandom() {
+    data = [];
+    removeAllChild(resultUl);
+  }
+  function bindDelete() {
+    
+  }
+  function init() {
+    render();
+    randomBtn.addEventListener('click', function () {
+      createRandom();
+      render();
+    });
+    clearBtn.addEventListener('click', function () {
+      clearRandom();
+
+    })
+    sortMap.addEventListener('click', function () {
+      sort();
+    });
+    leftIn.addEventListener('click', function () {
+      verifyInput();
+      data.unshift(input.value);
+      render();
+    });
+    leftOut.addEventListener('click', function () {
+      if( data.length == 0){
+          alert('数组为空，无法移除元素');
+          return;
+      }
+      alert(data.shift());
+      render();
+    });
+    rightIn.addEventListener('click', function () {
+      verifyInput();
+      data.push(input.value);
+      render();
+    });
+    rightOut.addEventListener('click', function () {
+      if ( data.length == 0 ){
+          alert('数组为空，无法移除元素');
+          return;
+      }
+      alert(data.pop());
+      render();
+    });
+  }
+  init();
+</script>
 </body>
 </html>
