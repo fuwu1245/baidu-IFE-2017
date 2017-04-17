@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<input type="text" name="input" id="input">
+<button id="verify">校验</button>
+<p id="result"></p>
+<script>
+  let _input = document.getElementById('input'),
+      _verrifyBtn = document.getElementById('verify'),
+      _result = document.getElementById('result');
+  function init(){
+      _verrifyBtn.addEventListener('click', function () {
+        let val = _input.value,
+          digitRex = new RegExp("^\d{5,12}$");
+        console.info(digitRex.exec("3123123123"));
+        console.info(digitRex.exec("32343"));
+        console.info(digitRex.exec("3233"));
+      })
+  }
+  init();
+</script>
+</body>
+</html>
